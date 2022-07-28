@@ -10,6 +10,9 @@ const input = document.getElementById('newtodo');
 // Generate Template Function
 const generateTemplate  = (todos) => {
 
+
+
+
     const html = `
     <li class="tdbox" style="display: block;"> 
     ${todos}
@@ -29,6 +32,19 @@ addF.addEventListener('submit', (e) => {
 
     if(todos.length >= 1){
         generateTemplate(todos);
+
+        let todoEntry;
+        if(localStorage.getItem('todolist')  === null){
+            todoEntry = [];
+        }else{
+            todoEntry = JSON.parse(localStorage.getItem('todolist'));
+        }
+        todoEntry.push(todos)        
+              
+            //add todo to localStorage
+         localStorage.setItem('todolist', JSON.stringify(todoEntry));
+
+         //reset Form
         addF.reset();
     }
     
@@ -40,8 +56,53 @@ ulist.addEventListener('click', (e) => {
     if(e.target.classList.contains('fa-trash-o')  ){
             const tList = e.target.parentNode.parentNode;
             tList.remove();
+
+            const lsTList = tList.textContent.trim();
+
+            //remove from localstorage
+            let todoEntry;
+            if(localStorage.getItem('todolist')  === null){
+                todoEntry = [];
+            }else{
+                todoEntry = JSON.parse(localStorage.getItem('todolist'));
+            }
+
+            todoEntry.forEach((task,index) => {
+                if(lsTList ===  task){
+                    todoEntry.splice(index, 1);
+                }
+            });
+
+            localStorage.setItem('todolist',JSON.stringify(todoEntry));
     };
 });
+
+//update UI
+if(localStorage.getItem('todolist')){
+
+let viewTodo = JSON.parse(localStorage.getItem('todolist'));
+
+viewTodo.forEach((td)  => {
+
+    console.log(td);
+
+    const html = `
+    <li class="tdbox" style="display: block;"> 
+    ${td}
+    <span class="remove">
+    <i class="fa fa-trash-o" aria-hidden="true"></i>
+    </span>
+</li>
+    `;
+
+
+    ulist.innerHTML += html;
+});
+
+
+
+}
+
 
 
 
